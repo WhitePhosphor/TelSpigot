@@ -1,0 +1,9 @@
+name: TelSpigot
+version: '${project.version}'
+main: me.phosphorw.telspigot.TelSpigot
+api-version: '1.19'
+load: STARTUP
+
+commands:
+  telnet:
+    description: Add text here.
