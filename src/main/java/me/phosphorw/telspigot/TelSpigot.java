@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Objects;
 
 public final class TelSpigot extends JavaPlugin {
-
     @Override
     public void onEnable() {
         Objects.requireNonNull(Bukkit.getPluginCommand("telnet")).setExecutor(new telnetCommand());

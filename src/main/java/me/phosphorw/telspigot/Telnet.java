@@ -4,40 +4,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import org.bukkit.command.CommandSender;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Creates a telnet client.
+ */
 
 public class Telnet {
-    private Socket Cli;
+    private Socket socket;
     private InputStream IStream;
     private OutputStream OStream;
 
-    public void Connect(String hostAddr, int port, CommandSender sender) throws IOException {
-        Cli = new Socket(hostAddr, port);
-        sender.sendMessage("Successfully connected to " + hostAddr + " on port" + port + ".");
-
-        IStream = Cli.getInputStream();
-        OStream = Cli.getOutputStream();
-        sender.sendMessage("Successfully set up IOStream.");
+    public void Connect(String hostAddr, int port) throws IOException {
+        socket = new Socket(hostAddr, port);
+        IStream = socket.getInputStream();
+        OStream = socket.getOutputStream();
     }
 
-    public void sendCommand(String command, CommandSender sender) throws IOException {
+    public List sendCommand(String command) throws IOException {
         OStream.write((command + "\n").getBytes());
         OStream.flush();
-        sender.sendMessage("Sent command:" + command);
 
         byte[] byteBuffer = new byte[1024];
         int bytesRead;
+        List<String> response = new ArrayList<>();
         while ((bytesRead = IStream.read(byteBuffer)) != -1) {
-            String response = new String(byteBuffer, 0, bytesRead);
-            sender.sendMessage("Response from server:" + response);
+            response.add(new String(byteBuffer, 0, bytesRead));
         }
+        return response;
     }
 
-    public void Disconnect(CommandSender sender) throws IOException {
-        if (Cli != null && !Cli.isClosed()) {
-            String addr = String.valueOf(Cli.getInetAddress());
-            Cli.close();
-            sender.sendMessage("Disconnected from server: " + addr);
+    public boolean Disconnect() throws IOException {
+        if (socket == null) {
+            return false;
+        }
+
+        if (!socket.isClosed()) {
+            socket.close();
+            return true;
+        } else {
+            return false;
         }
     }
 }
